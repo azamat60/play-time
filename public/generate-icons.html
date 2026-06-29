@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head><title>Generate Icons</title></head>
+<body>
+<p>Click each button to download. Save as icon-192.png and icon-512.png in the public/ folder.</p>
+<button onclick="gen(192)">Download icon-192.png</button>
+<button onclick="gen(512)">Download icon-512.png</button>
+<canvas id="c" style="display:block;margin-top:20px"></canvas>
+<script>
+function gen(size) {
+  const c = document.getElementById('c');
+  c.width = size; c.height = size;
+  const ctx = c.getContext('2d');
+  const r = size * 112/512;
+
+  // Background rounded rect
+  ctx.beginPath();
+  ctx.moveTo(r, 0); ctx.lineTo(size-r, 0);
+  ctx.arcTo(size, 0, size, r, r);
+  ctx.lineTo(size, size-r);
+  ctx.arcTo(size, size, size-r, size, r);
+  ctx.lineTo(r, size);
+  ctx.arcTo(0, size, 0, size-r, r);
+  ctx.lineTo(0, r);
+  ctx.arcTo(0, 0, r, 0, r);
+  ctx.closePath();
+  ctx.fillStyle = '#0f0f1a';
+  ctx.fill();
+
+  const cx = size/2, cy = size/2, rad = size*140/512;
+
+  // Clock circle
+  const g1 = ctx.createLinearGradient(0,0,size,size);
+  g1.addColorStop(0, '#6C63FF'); g1.addColorStop(1, '#FF6584');
+  ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI*2);
+  ctx.strokeStyle = g1; ctx.lineWidth = size*20/512; ctx.stroke();
+
+  // Gold gradient
+  const g2 = ctx.createLinearGradient(0,0,size,size);
+  g2.addColorStop(0, '#FFB347'); g2.addColorStop(1, '#ffd07a');
+
+  // Hour hand (pointing up)
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - rad*0.72);
+  ctx.strokeStyle = g2; ctx.lineWidth = size*18/512;
+  ctx.lineCap = 'round'; ctx.stroke();
+
+  // Minute hand (pointing right-ish)
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + rad*0.55, cy + rad*0.3);
+  ctx.lineWidth = size*14/512; ctx.stroke();
+
+  // Center dot
+  ctx.beginPath(); ctx.arc(cx, cy, size*14/512, 0, Math.PI*2);
+  ctx.fillStyle = g2; ctx.fill();
+
+  const a = document.createElement('a');
+  a.download = `icon-${size}.png`;
+  a.href = c.toDataURL('image/png');
+  a.click();
+}
+</script>
+</body>
+</html>
