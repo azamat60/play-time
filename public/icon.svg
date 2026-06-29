@@ -1,22 +1,58 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#0f0f1a"/>
   <defs>
-    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6C63FF"/>
-      <stop offset="100%" stop-color="#FF6584"/>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7DD3FC"/>
+      <stop offset="100%" stop-color="#0284C7"/>
     </linearGradient>
-    <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FFB347"/>
-      <stop offset="100%" stop-color="#ffd07a"/>
+    <linearGradient id="shine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.28)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
     </linearGradient>
   </defs>
-  <!-- Clock circle -->
-  <circle cx="256" cy="256" r="140" fill="none" stroke="url(#g1)" stroke-width="20"/>
-  <!-- Clock hands -->
-  <line x1="256" y1="256" x2="256" y2="160" stroke="url(#g2)" stroke-width="18" stroke-linecap="round"/>
-  <line x1="256" y1="256" x2="320" y2="290" stroke="url(#g2)" stroke-width="14" stroke-linecap="round"/>
-  <!-- Center dot -->
-  <circle cx="256" cy="256" r="14" fill="url(#g2)"/>
-  <!-- Flame top-right -->
-  <path d="M340 155 C340 120 370 100 370 100 C360 130 390 140 380 170 C370 200 345 195 340 155Z" fill="url(#g2)" opacity="0.9"/>
+
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="112" fill="url(#shine)"/>
+
+  <!-- Brain left hemisphere -->
+  <path d="
+    M256 340
+    C256 340 136 332 120 256
+    C104 200 128 152 168 136
+    C160 112 176 88 200 88
+    C216 72 240 72 256 88
+    L256 340Z"
+    fill="#FECACA" stroke="#FCA5A5" stroke-width="9" stroke-linejoin="round"/>
+
+  <!-- Brain right hemisphere -->
+  <path d="
+    M256 340
+    C256 340 376 332 392 256
+    C408 200 384 152 344 136
+    C352 112 336 88 312 88
+    C296 72 272 72 256 88
+    L256 340Z"
+    fill="#FECACA" stroke="#FCA5A5" stroke-width="9" stroke-linejoin="round"/>
+
+  <!-- Brain stem -->
+  <rect x="224" y="332" width="64" height="40" rx="20" fill="#FCA5A5"/>
+
+  <!-- Center crease -->
+  <line x1="256" y1="95" x2="256" y2="330" stroke="#FCA5A5" stroke-width="7" stroke-dasharray="16,12"/>
+
+  <!-- Left folds -->
+  <path d="M176 160 C160 184 168 216 184 232" fill="none" stroke="#F87171" stroke-width="11" stroke-linecap="round"/>
+  <path d="M144 224 C152 256 176 272 200 280" fill="none" stroke="#F87171" stroke-width="11" stroke-linecap="round"/>
+  <path d="M200 112 C192 136 200 160 216 176" fill="none" stroke="#F87171" stroke-width="11" stroke-linecap="round"/>
+
+  <!-- Right folds -->
+  <path d="M336 160 C352 184 344 216 328 232" fill="none" stroke="#F87171" stroke-width="11" stroke-linecap="round"/>
+  <path d="M368 224 C360 256 336 272 312 280" fill="none" stroke="#F87171" stroke-width="11" stroke-linecap="round"/>
+  <path d="M312 112 C320 136 312 160 296 176" fill="none" stroke="#F87171" stroke-width="11" stroke-linecap="round"/>
+
+  <!-- Gold clock badge -->
+  <circle cx="384" cy="384" r="88" fill="#F59E0B"/>
+  <circle cx="384" cy="384" r="72" fill="none" stroke="#FBBF24" stroke-width="10"/>
+  <line x1="384" y1="384" x2="384" y2="328" stroke="white" stroke-width="12" stroke-linecap="round"/>
+  <line x1="384" y1="384" x2="424" y2="408" stroke="white" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="384" cy="384" r="8" fill="white"/>
 </svg>
