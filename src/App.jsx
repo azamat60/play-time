@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   Plus, CheckCircle2, Trash2, ChevronLeft,
-  RotateCcw, History, Calendar, X
+  RotateCcw, History, Calendar, X, Minus
 } from 'lucide-react';
 import {
   getTodayTasks, getUpcomingTasks, getTodayBalance,
@@ -46,8 +46,83 @@ function recurrenceLabel(r) {
   return null;
 }
 
+// ── Spend Modal ─────────────────────────────────────────────────────────────
+const SPEND_PRESETS = [5, 10, 15, 20, 30, 60];
+
+function SpendModal({ onClose, onSpend }) {
+  const [minutes, setMinutes] = useState(15);
+  const [customMin, setCustomMin] = useState('');
+  const [note, setNote] = useState('');
+  const [error, setError] = useState('');
+
+  function handleSpend() {
+    const mins = customMin ? parseInt(customMin) : minutes;
+    if (!mins || mins < 1) { setError('Укажи количество минут'); return; }
+    onSpend(mins, note.trim() || null);
+  }
+
+  return (
+    <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal-sheet">
+        <div className="modal-header">
+          <div className="modal-title">🎮 Потратить минуты</div>
+          <button className="modal-close" onClick={onClose}><X size={20} /></button>
+        </div>
+
+        <div className="modal-body">
+          <div className="form-group">
+            <label>Сколько минут</label>
+            <div className="preset-grid">
+              {SPEND_PRESETS.map(m => (
+                <button
+                  key={m}
+                  className={`preset-btn spend-preset ${minutes === m && !customMin ? 'active' : ''}`}
+                  onClick={() => { setMinutes(m); setCustomMin(''); setError(''); }}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+            <input
+              className="input mt-8"
+              type="number"
+              placeholder="Или своё число..."
+              value={customMin}
+              min={1}
+              onChange={e => { setCustomMin(e.target.value); setMinutes(0); setError(''); }}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>На что тратишь (необязательно)</label>
+            <input
+              className="input"
+              placeholder="YouTube, игры, сериал..."
+              value={note}
+              onChange={e => setNote(e.target.value)}
+            />
+          </div>
+
+          {error && <div className="form-error">{error}</div>}
+
+          <div className="spend-preview">
+            <span className="spend-preview-mins">−{customMin || minutes} мин</span>
+            {(note || customMin || minutes) && (
+              <span className="spend-preview-note">{note || 'Экранное время'}</span>
+            )}
+          </div>
+
+          <button className="btn-spend" onClick={handleSpend}>
+            🎮 Списать минуты
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Balance Header ──────────────────────────────────────────────────────────
-function BalanceHeader({ balance, rollover, onHistory }) {
+function BalanceHeader({ balance, rollover, onHistory, onSpend }) {
   return (
     <div className="balance-header">
       <div className="balance-top-row">
@@ -60,12 +135,15 @@ function BalanceHeader({ balance, rollover, onHistory }) {
             </div>
           </div>
         </div>
-        <button className="icon-pill" onClick={onHistory}>
-          <History size={18} />
-        </button>
+        <div className="header-actions">
+          <button className="play-btn" onClick={onSpend}>
+            🎮 Играть
+          </button>
+          <button className="icon-pill" onClick={onHistory}>
+            <History size={18} />
+          </button>
+        </div>
       </div>
-
-      {/* TODO: progress bar towards daily goal */}
 
       {rollover > 0 && (
         <div className="rollover-badge">
@@ -347,6 +425,7 @@ export default function App() {
   const [balance, setBalance] = useState(0);
   const [rollover, setRollover] = useState(0);
   const [tab, setTab] = useState('today');
+  const [spendOpen, setSpendOpen] = useState(false);
 
   const refresh = useCallback(() => {
     setTasks({ today: getTodayTasks(), upcoming: getUpcomingTasks() });
@@ -372,6 +451,12 @@ export default function App() {
     refresh();
   }
 
+  function handleSpend(mins, note) {
+    addSpend(mins, note);
+    refresh();
+    setSpendOpen(false);
+  }
+
   if (screen === 'create') {
     return <CreateScreen onSave={handleSaveTask} onBack={() => setScreen('main')} />;
   }
@@ -390,7 +475,12 @@ export default function App() {
         balance={balance}
         rollover={rollover}
         onHistory={() => setScreen('history')}
+        onSpend={() => setSpendOpen(true)}
       />
+
+      {spendOpen && (
+        <SpendModal onClose={() => setSpendOpen(false)} onSpend={handleSpend} />
+      )}
 
       <div className="main-content">
         <div className="stats-row">
