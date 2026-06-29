@@ -105,6 +105,10 @@ export function deleteTask(id) {
   saveTasks(getTasks().filter(t => t.id !== id));
 }
 
+export function updateTask(id, fields) {
+  saveTasks(getTasks().map(t => t.id === id ? { ...t, ...fields } : t));
+}
+
 export function completeTask(task) {
   const today = TODAY();
   const completions = getCompletions();
