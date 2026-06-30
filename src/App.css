@@ -417,13 +417,8 @@ input { font: inherit; color: var(--text); }
   overflow: hidden;
 }
 
-.create-screen {
-  background: var(--card2);
-}
-
-.history-screen {
-  background: var(--card2);
-}
+.create-screen {}
+.history-screen {}
 
 .slide-in {
   animation: slideIn 0.25s ease;
@@ -437,9 +432,7 @@ input { font: inherit; color: var(--text); }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 36px 16px 14px;
-  background: linear-gradient(175deg, var(--sky1) 0%, var(--sky2) 100%);
-  border-radius: 0 0 22px 22px;
+  padding: 52px 16px 20px;
   margin-bottom: 4px;
 }
 
@@ -447,6 +440,7 @@ input { font: inherit; color: var(--text); }
   font-size: 18px;
   font-weight: 800;
   color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .back-btn {

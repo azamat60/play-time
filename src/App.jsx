@@ -228,6 +228,7 @@ function TaskForm({ initialTask, onSave, onBack }) {
 
   return (
     <div className="screen slide-in create-screen">
+      <div className="sky-bg" />
       <div className="screen-header">
         <button className="back-btn" onClick={onBack}>
           <ChevronLeft size={22} />
@@ -236,6 +237,7 @@ function TaskForm({ initialTask, onSave, onBack }) {
         <div style={{ width: 36 }} />
       </div>
 
+      <div className="main-content">
       <div className="form-body">
         <div className="form-group">
           <label>Name</label>
@@ -345,6 +347,7 @@ function TaskForm({ initialTask, onSave, onBack }) {
           {isEdit ? '✏️ Save Changes' : '✨ Create Task'}
         </button>
       </div>
+      </div>
     </div>
   );
 }
@@ -369,6 +372,7 @@ function HistoryScreen({ onBack, onRefreshBalance }) {
 
   return (
     <div className="screen slide-in history-screen">
+      <div className="sky-bg" />
       <div className="screen-header">
         <button className="back-btn" onClick={onBack}>
           <ChevronLeft size={22} />
@@ -377,6 +381,7 @@ function HistoryScreen({ onBack, onRefreshBalance }) {
         <div style={{ width: 36 }} />
       </div>
 
+      <div className="main-content">
       <div className="history-body">
         {Object.keys(grouped).length === 0 && (
           <div className="empty-state">
@@ -413,6 +418,7 @@ function HistoryScreen({ onBack, onRefreshBalance }) {
             })}
           </div>
         ))}
+      </div>
       </div>
     </div>
   );
