@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import {
   getTodayTasks, getUpcomingTasks, getTodayBalance,
-  addTask, deleteTask, completeTask, updateTask, addSpend,
+  addTask, deleteTask, completeTask, updateTask, postponeTask, addSpend,
   getAllHistory, computeRollover, getTodayCompletions,
   deleteHistoryItem
 } from './store.js';
@@ -145,7 +145,7 @@ function BalanceHeader({ balance, rollover, onHistory, onSpend }) {
 }
 
 // ── Task Card ───────────────────────────────────────────────────────────────
-function TaskCard({ task, onComplete, onDelete, onEdit, showDate }) {
+function TaskCard({ task, onComplete, onDelete, onEdit, onPostpone, showDate }) {
   const cat = getCat(task.category);
   const rec = recurrenceLabel(task.recurrence);
   return (
@@ -168,6 +168,11 @@ function TaskCard({ task, onComplete, onDelete, onEdit, showDate }) {
             <button className="btn-done" onClick={e => { e.stopPropagation(); onComplete(task); }}>
               <CheckCircle2 size={24} />
             </button>
+            {onPostpone && (
+              <button className="btn-postpone" title="Tomorrow" onClick={e => { e.stopPropagation(); onPostpone(task.id); }}>
+                📅
+              </button>
+            )}
             <button className="btn-del" onClick={e => { e.stopPropagation(); onDelete(task.id); }}>
               <Trash2 size={16} />
             </button>
@@ -459,6 +464,11 @@ export default function App() {
     refresh();
   }
 
+  function handlePostpone(id) {
+    postponeTask(id);
+    refresh();
+  }
+
   function handleSpend(mins) {
     addSpend(mins, `${mins} min screen time`);
     refresh();
@@ -529,6 +539,7 @@ export default function App() {
               onComplete={handleComplete}
               onDelete={handleDelete}
               onEdit={handleEditTask}
+              onPostpone={tab === 'today' ? handlePostpone : null}
               showDate={tab === 'upcoming'}
             />
           ))}

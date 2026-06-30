@@ -109,6 +109,13 @@ export function updateTask(id, fields) {
   saveTasks(getTasks().map(t => t.id === id ? { ...t, ...fields } : t));
 }
 
+export function postponeTask(id) {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const date = tomorrow.toISOString().slice(0, 10);
+  updateTask(id, { date });
+}
+
 export function completeTask(task) {
   const today = TODAY();
   const completions = getCompletions();
