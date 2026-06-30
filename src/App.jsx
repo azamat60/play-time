@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Plus, CheckCircle2, Trash2, ChevronLeft,
-  RotateCcw, History, X, Minus
+  Plus, Check, Trash2, ChevronLeft,
+  RotateCcw, History, X, CalendarPlus
 } from 'lucide-react';
 import {
   getTodayTasks, getUpcomingTasks, getTodayBalance,
@@ -165,16 +165,16 @@ function TaskCard({ task, onComplete, onDelete, onEdit, onPostpone, showDate }) 
         <div className="task-right">
           <div className="task-reward">⏱ {task.minutes} min</div>
           <div className="task-btns">
-            <button className="btn-done" onClick={e => { e.stopPropagation(); onComplete(task); }}>
-              <CheckCircle2 size={24} />
+            <button className="task-action-btn done" onClick={e => { e.stopPropagation(); onComplete(task); }}>
+              <Check size={15} />
             </button>
             {onPostpone && (
-              <button className="btn-postpone" title="Tomorrow" onClick={e => { e.stopPropagation(); onPostpone(task.id); }}>
-                📅
+              <button className="task-action-btn postpone" title="Tomorrow" onClick={e => { e.stopPropagation(); onPostpone(task.id); }}>
+                <CalendarPlus size={15} />
               </button>
             )}
-            <button className="btn-del" onClick={e => { e.stopPropagation(); onDelete(task.id); }}>
-              <Trash2 size={16} />
+            <button className="task-action-btn del" onClick={e => { e.stopPropagation(); onDelete(task.id); }}>
+              <Trash2 size={15} />
             </button>
           </div>
         </div>
