@@ -21,16 +21,25 @@
   font-size: 16px;
 }
 
-html { overflow-x: hidden; }
+html {
+  height: 100%;
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+}
 
 body {
   background: var(--sky2);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-  min-height: 100dvh;
+  height: 100%;
+  overflow: hidden;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
   width: 100%;
+}
+
+#root {
+  height: 100%;
+  overflow: hidden;
 }
 
 button { cursor: pointer; border: none; background: none; color: inherit; font: inherit; }
@@ -40,7 +49,7 @@ input { font: inherit; color: var(--text); }
 .app {
   max-width: 430px;
   margin: 0 auto;
-  height: 100dvh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   position: relative;
