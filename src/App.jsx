@@ -427,6 +427,8 @@ function HistoryScreen({ onBack, onRefreshBalance }) {
 // ── Main App ────────────────────────────────────────────────────────────────
 export default function App() {
   const [screen, setScreen] = useState('main'); // main | create | edit | history
+  const [prevScreen, setPrevScreen] = useState(null);
+  const [direction, setDirection] = useState('forward'); // 'forward' | 'back'
   const [editingTask, setEditingTask] = useState(null);
   const [tasks, setTasks] = useState({ today: [], upcoming: [] });
   const [balance, setBalance] = useState(0);
@@ -442,22 +444,62 @@ export default function App() {
 
   useEffect(() => { refresh(); }, [refresh]);
 
+  const screenRef = useRef(screen);
+  const goBackRef = useRef(null);
+  useEffect(() => { screenRef.current = screen; }, [screen]);
+
+  useEffect(() => {
+    let startX = 0, startY = 0;
+    const onStart = e => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    };
+    const onEnd = e => {
+      if (screenRef.current === 'main') return;
+      const dx = e.changedTouches[0].clientX - startX;
+      const dy = Math.abs(e.changedTouches[0].clientY - startY);
+      if (startX < 40 && dx > 70 && dy < 100) {
+        goBackRef.current?.();
+      }
+    };
+    window.addEventListener('touchstart', onStart, { passive: true });
+    window.addEventListener('touchend', onEnd, { passive: true });
+    return () => {
+      window.removeEventListener('touchstart', onStart);
+      window.removeEventListener('touchend', onEnd);
+    };
+  }, []);
+
+  function goTo(newScreen) {
+    setDirection('forward');
+    setPrevScreen(screen);
+    setScreen(newScreen);
+    setTimeout(() => setPrevScreen(null), 320);
+  }
+
+  function goBack() {
+    setDirection('back');
+    setPrevScreen(screen);
+    setScreen('main');
+    setTimeout(() => { setPrevScreen(null); setEditingTask(null); }, 320);
+  }
+  goBackRef.current = goBack;
+
   function handleSaveTask(taskData) {
     addTask(taskData);
     refresh();
-    setScreen('main');
+    goBack();
   }
 
   function handleUpdateTask(taskData) {
     updateTask(editingTask.id, taskData);
     refresh();
-    setScreen('main');
-    setEditingTask(null);
+    goBack();
   }
 
   function handleEditTask(task) {
     setEditingTask(task);
-    setScreen('edit');
+    goTo('edit');
   }
 
   function handleComplete(task) {
@@ -481,87 +523,100 @@ export default function App() {
     setShowSpend(false);
   }
 
-  if (screen === 'create') {
-    return <TaskForm onSave={handleSaveTask} onBack={() => setScreen('main')} />;
-  }
-  if (screen === 'edit') {
-    return (
-      <TaskForm
-        initialTask={editingTask}
-        onSave={handleUpdateTask}
-        onBack={() => { setScreen('main'); setEditingTask(null); }}
-      />
-    );
-  }
-  if (screen === 'history') {
-    return <HistoryScreen onBack={() => setScreen('main')} onRefreshBalance={refresh} />;
-  }
-
   const currentList = tab === 'today' ? tasks.today : tasks.upcoming;
   const todayDone = getTodayCompletions().length;
   const todayEarned = getTodayCompletions().reduce((s,c) => s + c.minutes, 0);
 
-  return (
-    <div className="app">
-      <div className="sky-bg" />
+  const enterClass = direction === 'forward' ? 'slide-in-right' : 'slide-in-left';
+  const exitClass  = direction === 'forward' ? 'slide-out-left' : 'slide-out-right';
 
-      <BalanceHeader
-        balance={balance}
-        rollover={rollover}
-        onSpend={() => setShowSpend(true)}
-        onHistory={() => setScreen('history')}
-      />
-
-      <div className="main-content">
-        <div className="stats-row">
-          <div className="stat-pill">🎯 <span>{tasks.today.length} tasks</span></div>
-          <div className="stat-pill done">✅ <span>{todayDone} done</span></div>
-          <div className="stat-pill earn">⏱ <span>{todayEarned} min earned</span></div>
-        </div>
-
-        <div className="tab-bar">
-          <button className={`tab-btn ${tab === 'today' ? 'active' : ''}`} onClick={() => setTab('today')}>
-            📋 Today
-          </button>
-          <button className={`tab-btn ${tab === 'upcoming' ? 'active' : ''}`} onClick={() => setTab('upcoming')}>
-            📅 Upcoming
-          </button>
-        </div>
-
-        <div className="task-list">
-          {currentList.length === 0 && (
-            <div className="empty-state">
-              <div className="empty-emoji">🌱</div>
-              <p>{tab === 'today' ? 'No tasks for today' : 'No upcoming tasks'}</p>
-              <button className="btn-outline" onClick={() => setScreen('create')}>
-                <Plus size={16} /> Add task
-              </button>
-            </div>
-          )}
-          {currentList.map(task => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onComplete={handleComplete}
-              onDelete={handleDelete}
-              onEdit={handleEditTask}
-              onPostpone={tab === 'today' ? handlePostpone : null}
-              showDate={tab === 'upcoming'}
+  function renderScreen(name, animClass) {
+    if (name === 'main') {
+      return (
+        <div key="main" className={`screen-layer ${animClass}`}>
+          <div className="app">
+            <div className="sky-bg" />
+            <BalanceHeader
+              balance={balance}
+              rollover={rollover}
+              onSpend={() => setShowSpend(true)}
+              onHistory={() => goTo('history')}
             />
-          ))}
+            <div className="main-content">
+              <div className="stats-row">
+                <div className="stat-pill">🎯 <span>{tasks.today.length} tasks</span></div>
+                <div className="stat-pill done">✅ <span>{todayDone} done</span></div>
+                <div className="stat-pill earn">⏱ <span>{todayEarned} min earned</span></div>
+              </div>
+              <div className="tab-bar">
+                <button className={`tab-btn ${tab === 'today' ? 'active' : ''}`} onClick={() => setTab('today')}>
+                  📋 Today
+                </button>
+                <button className={`tab-btn ${tab === 'upcoming' ? 'active' : ''}`} onClick={() => setTab('upcoming')}>
+                  📅 Upcoming
+                </button>
+              </div>
+              <div className="task-list">
+                {currentList.length === 0 && (
+                  <div className="empty-state">
+                    <div className="empty-emoji">🌱</div>
+                    <p>{tab === 'today' ? 'No tasks for today' : 'No upcoming tasks'}</p>
+                    <button className="btn-outline" onClick={() => goTo('create')}>
+                      <Plus size={16} /> Add task
+                    </button>
+                  </div>
+                )}
+                {currentList.map(task => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onComplete={handleComplete}
+                    onDelete={handleDelete}
+                    onEdit={handleEditTask}
+                    onPostpone={tab === 'today' ? handlePostpone : null}
+                    showDate={tab === 'upcoming'}
+                  />
+                ))}
+              </div>
+            </div>
+            <button className="fab" onClick={() => goTo('create')}>
+              <Plus size={26} />
+            </button>
+            {showSpend && (
+              <SpendModal onSpend={handleSpend} onClose={() => setShowSpend(false)} />
+            )}
+          </div>
         </div>
-      </div>
+      );
+    }
+    if (name === 'create') {
+      return (
+        <div key="create" className={`screen-layer ${animClass}`}>
+          <TaskForm onSave={handleSaveTask} onBack={goBack} />
+        </div>
+      );
+    }
+    if (name === 'edit') {
+      return (
+        <div key="edit" className={`screen-layer ${animClass}`}>
+          <TaskForm initialTask={editingTask} onSave={handleUpdateTask} onBack={goBack} />
+        </div>
+      );
+    }
+    if (name === 'history') {
+      return (
+        <div key="history" className={`screen-layer ${animClass}`}>
+          <HistoryScreen onBack={goBack} onRefreshBalance={refresh} />
+        </div>
+      );
+    }
+    return null;
+  }
 
-      <button className="fab" onClick={() => setScreen('create')}>
-        <Plus size={26} />
-      </button>
-
-      {showSpend && (
-        <SpendModal
-          onSpend={handleSpend}
-          onClose={() => setShowSpend(false)}
-        />
-      )}
+  return (
+    <div className="screen-stack">
+      {prevScreen && renderScreen(prevScreen, exitClass)}
+      {renderScreen(screen, prevScreen ? enterClass : '')}
     </div>
   );
 }

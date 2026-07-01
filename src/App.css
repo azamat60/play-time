@@ -407,6 +407,23 @@ input { font: inherit; color: var(--text); }
 }
 .btn-outline:active { background: #F1F5F9; }
 
+/* ── Screen Stack ─────────────────────────────────────────────────── */
+.screen-stack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior-x: none;
+  touch-action: pan-y;
+}
+
+.screen-layer {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+  overflow: hidden;
+}
+
 /* ── Screen ───────────────────────────────────────────────────────── */
 .screen {
   max-width: 430px;
@@ -420,12 +437,37 @@ input { font: inherit; color: var(--text); }
 .create-screen {}
 .history-screen {}
 
-.slide-in {
-  animation: slideIn 0.25s ease;
+/* Forward: new screen slides in from right, old exits to left */
+.slide-in-right {
+  animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
-@keyframes slideIn {
-  from { transform: translateX(100%); opacity: 0.5; }
-  to { transform: translateX(0); opacity: 1; }
+.slide-out-left {
+  animation: slideOutLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Back: new screen slides in from left, old exits to right */
+.slide-in-left {
+  animation: slideInLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.slide-out-right {
+  animation: slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes slideOutLeft {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-30%); }
+}
+@keyframes slideInLeft {
+  from { transform: translateX(-30%); }
+  to   { transform: translateX(0); }
+}
+@keyframes slideOutRight {
+  from { transform: translateX(0); }
+  to   { transform: translateX(100%); }
 }
 
 .screen-header {
@@ -481,7 +523,7 @@ input { font: inherit; color: var(--text); }
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 9px 12px;
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text);
   outline: none;
   width: 100%;
