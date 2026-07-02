@@ -28,7 +28,7 @@ html {
 }
 
 body {
-  background: var(--card2);
+  background: #7DD3FC;
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
   height: 100%;
